@@ -1,0 +1,16 @@
+[
+{
+  "modid": "terraria",
+  "name": "Terraria Mod",
+  "description": "Terraria in Minecraft!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["WallaceTheWizard"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
