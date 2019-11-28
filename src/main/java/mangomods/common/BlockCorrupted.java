@@ -16,8 +16,8 @@ public class BlockCorrupted extends TBlock {
 
     private static final int MAX_SPREAD_DISTANCE = 3;
     private static final int PROBE_RADIUS = 128;
-    private static final int PROBE_COUNT = 128;
-    private static final double CDU_THRESHOLD = -1;
+    private static final int PROBE_COUNT = 1024;
+    private static final double CDU_THRESHOLD = 1;
 
     private static final ArrayList<Vec3i> spreadLocations = new ArrayList<>();
 
@@ -64,11 +64,12 @@ public class BlockCorrupted extends TBlock {
         ArrayList<BlockPos> corruptedProbePoints = new ArrayList<>();
         ArrayList<BlockPos> uncorruptedProbePoints = new ArrayList<>();
         for(int probe = 0; probe < PROBE_COUNT; probe++) {
-            BlockPos probePos = pos.add(rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS, rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS, rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS);
-            if(!worldIn.isBlockLoaded(probePos)) {
+            BlockPos probePos = new BlockPos(rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS, rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS, rand.nextInt(2 * PROBE_RADIUS + 1) - PROBE_RADIUS);
+            BlockPos probePosAbsolute = pos.add(probePos);
+            if(!worldIn.isBlockLoaded(probePosAbsolute)) {
                 uncorruptedProbePoints.add(probePos);
-            } else if(worldIn.getBlockState(probePos).getMaterial().isSolid()) {
-                if(worldIn.getBlockState(probePos).getBlock() == BlockInit.CORRUPTED) {
+            } else if(worldIn.getBlockState(probePosAbsolute).getMaterial().isSolid()) {
+                if(worldIn.getBlockState(probePosAbsolute).getBlock() == BlockInit.CORRUPTED) {
                     corruptedProbePoints.add(probePos);
                 } else uncorruptedProbePoints.add(probePos);
             }
@@ -76,11 +77,11 @@ public class BlockCorrupted extends TBlock {
 
         Vec3d uncorruptedAverage = Vec3d.ZERO;
         for(BlockPos uncorruptedProbePoint : uncorruptedProbePoints) uncorruptedAverage = uncorruptedAverage.add(new Vec3d(uncorruptedProbePoint));
-        if(uncorruptedProbePoints.size() != 0) uncorruptedAverage.scale(1.0 / uncorruptedProbePoints.size());
+        if(uncorruptedProbePoints.size() != 0) uncorruptedAverage = uncorruptedAverage.scale(1.0 / uncorruptedProbePoints.size());
 
         Vec3d corruptedAverage = Vec3d.ZERO;
         for(BlockPos corruptedProbePoint : corruptedProbePoints) corruptedAverage = corruptedAverage.add(new Vec3d(corruptedProbePoint));
-        if(corruptedProbePoints.size() != 0) corruptedAverage.scale(1.0 / corruptedProbePoints.size());
+        if(corruptedProbePoints.size() != 0) corruptedAverage = corruptedAverage.scale(1.0 / corruptedProbePoints.size());
 
         double corruptedDotUncorrupted = corruptedAverage.dotProduct(uncorruptedAverage);
         double directionDotUncorrupted = new Vec3d(spreadLocation).dotProduct(uncorruptedAverage);
